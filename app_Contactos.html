@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Gerenciamento de Contatos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Gerenciamento de Contatos</h1>
+
+        <!-- Tela de Login -->
+        <div id="loginScreen">
+            <h3>Login</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Usuário</label>
+                    <input type="text" class="form-control" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" class="form-control" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+            <hr>
+            <p>Não tem uma conta? <a href="#" id="showSignup">Cadastre-se</a></p>
+        </div>
+
+        <!-- Tela de Cadastro -->
+        <div id="signupScreen" style="display: none;">
+            <h3>Cadastro de Usuário</h3>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">Usuário</label>
+                    <input type="text" class="form-control" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Senha</label>
+                    <input type="password" class="form-control" id="signupPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+            <hr>
+            <p>Já tem uma conta? <a href="#" id="showLogin">Faça login</a></p>
+        </div>
+
+        <!-- Tela de Gerenciamento de Contatos -->
+        <div id="contactsScreen" style="display: none;">
+            <h3>Meus Contatos</h3>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Nome</label>
+                    <input type="text" class="form-control" id="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactNumber">Número</label>
+                    <input type="text" class="form-control" id="contactNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactDescription">Descrição</label>
+                    <textarea class="form-control" id="contactDescription" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar Contato</button>
+                <button type="button" class="btn btn-secondary" id="logout">Sair</button>
+            </form>
+            <hr>
+            <h4>Lista de Contatos</h4>
+            <ul id="contactList" class="list-group">
+                <!-- Contatos serão adicionados aqui -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Função para exibir tela de login
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('signupScreen').style.display = 'none';
+            document.getElementById('contactsScreen').style.display = 'none';
+        }
+
+        // Função para exibir tela de cadastro
+        function showSignupScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('signupScreen').style.display = 'block';
+            document.getElementById('contactsScreen').style.display = 'none';
+        }
+
+        // Função para exibir tela de gerenciamento de contatos
+        function showContactsScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('signupScreen').style.display = 'none';
+            document.getElementById('contactsScreen').style.display = 'block';
+        }
+
+      // Função para validar o login
+function validateLogin(username, password) {
+    // Recupere os dados armazenados localmente
+    var storedData = localStorage.getItem('userData');
+
+    // Verifique se há dados armazenados
+    if (storedData) {
+        var userData = JSON.parse(storedData);
+        
+        // Verifique se os dados do usuário e senha correspondem aos dados armazenados
+        if (username === userData.username && password === userData.password) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+        // Função para adicionar um novo contato
+        function addContact(name, number, description) {
+            // Crie um novo elemento de lista
+            var listItem = document.createElement('li');
+            listItem.className = 'list-group-item';
+
+            // Crie elementos para exibir os dados do contato
+            var nameElement = document.createElement('h5');
+            nameElement.innerText = name;
+
+            var numberElement = document.createElement('p');
+            numberElement.innerText = number;
+
+            var descriptionElement = document.createElement('p');
+            descriptionElement.innerText = description;
+
+            // Adicione os elementos ao item da lista
+            listItem.appendChild(nameElement);
+            listItem.appendChild(numberElement);
+            listItem.appendChild(descriptionElement);
+
+            // Adicione o item da lista à lista de contatos
+            document.getElementById('contactList').appendChild(listItem);
+        }
+
+        // Manipulador de evento para exibir a tela de cadastro quando o link "Cadastre-se" é clicado
+        document.getElementById('showSignup').addEventListener('click', function(event) {
+            event.preventDefault();
+            showSignupScreen();
+        });
+
+        // Manipulador de evento para exibir a tela de login quando o link "Faça login" é clicado
+        document.getElementById('showLogin').addEventListener('click', function(event) {
+            event.preventDefault();
+            showLoginScreen();
+        });
+
+        // Manipulador de evento para o formulário de login
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtenha os valores de usuário e senha do formulário
+            var username = document.getElementById('loginUsername').value;
+            var password = document.getElementById('loginPassword').value;
+
+            // Valide o login
+            if (validateLogin(username, password)) {
+                // Exiba a tela de gerenciamento de contatos
+                showContactsScreen();
+            } else {
+                alert('Usuário ou senha inválidos');
+            }
+        });
+
+        // Manipulador de evento para o formulário de cadastro
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtenha os valores de usuário e senha do formulário
+            var username = document.getElementById('signupUsername').value;
+            var password = document.getElementById('signupPassword').value;
+
+            // Realize o cadastro do usuário (você pode enviar os dados para um servidor ou armazená-los localmente)
+            // Aqui está um exemplo simples de armazenamento local usando o armazenamento do navegador:
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
+
+            // Exiba a tela de gerenciamento de contatos
+            showContactsScreen();
+        });
+
+        // Manipulador de evento para o formulário de adicionar contato
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtenha os valores do formulário de adicionar contato
+            var name = document.getElementById('contactName').value;
+            var number = document.getElementById('contactNumber').value;
+            var description = document.getElementById('contactDescription').value;
+
+            // Adicione o novo contato
+            addContact(name, number, description);
+
+            // Limpe o formulário
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactNumber').value = '';
+            document.getElementById('contactDescription').value = '';
+        });
+
+        // Manipulador de evento para o botão "Sair"
+        document.getElementById('logout').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Limpe os dados de login (você pode remover os dados armazenados localmente ou fazer logout do servidor)
+            // Aqui está um exemplo simples de remoção dos dados armazenados localmente:
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
+
+            // Exiba a tela de login
+            showLoginScreen();
+        });
+
+        // Verifique se há dados de login armazenados localmente
+        var storedUsername = localStorage.getItem('username');
+        var storedPassword = localStorage.getItem('password');
+
+        if (storedUsername && storedPassword) {
+            // Exiba a tela de gerenciamento de contatos se os dados de login estiverem armazenados
+            showContactsScreen();
+        } else {
+            // Exiba a tela de login se os dados de login não estiverem armazenados
+            showLoginScreen();
+
+
+        }
+
+        const express = require('express');
+const jwt = require('jsonwebtoken');
+
+const app = express();
+const secretKey = 'seu_segredo_aqui';
+
+// Rota de login
+app.post('/login', (req, res) => {
+  // Verifique as credenciais do usuário (por exemplo, consultando um banco de dados)
+  const username = req.body.username;
+  const password = req.body.password;
+
+  // Verifique se as credenciais são válidas
+  if (username === 'usuariodemo' && password === 'senhademo') {
+    // Gere um token de autenticação
+    const token = jwt.sign({ username: username }, secretKey);
+
+    // Envie o token de autenticação para o cliente
+    res.json({ token: token });
+  } else {
+    // Credenciais inválidas
+    res.status(401).json({ error: 'Credenciais inválidas' });
+  }
+});
+
+// Middleware de autenticação
+function authenticate(req, res, next) {
+  // Verifique se o token de autenticação foi fornecido
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token de autenticação não fornecido' });
+  }
+
+  // Verifique a validade do token
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token de autenticação inválido' });
+    }
+
+    // O token é válido, anexa os dados do usuário ao objeto da solicitação
+    req.user = decoded;
+    next();
+  });
+}
+
+// Rota protegida
+app.get('/dados', authenticate, (req, res) => {
+  // Acesso aos dados do usuário autenticado
+  const username = req.user.username;
+  // Recupere os dados do usuário autenticado do banco de dados
+  // ...
+
+  res.json({ username: username, dados: 'Dados do usuário' });
+});
+
+// Inicie o servidor
+app.listen(3000, () => {
+  console.log('Servidor iniciado na porta 3000');
+});
+    </script>
+
+    
+</body>
+</html>
